@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-
+const expenseRoutes = require("./routes/expenseRoutes");
 const app = express();
 
 app.use(cors());
@@ -12,5 +12,5 @@ app.get("/", (req, res) => {
         message: "Team 5 Billing Software API is running"
     });
 });
-
+app.use("/api/expenses", expenseRoutes);
 module.exports = app;
