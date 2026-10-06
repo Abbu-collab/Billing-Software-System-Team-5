@@ -4,7 +4,7 @@ const paymentSchema = new mongoose.Schema(
     {
         invoice: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: "Invoice"
+            ref: "Invoices"
         },
 
         customer: {
