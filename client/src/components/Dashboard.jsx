@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import "./Dashboard.css";
 
-const API_URL = "http://localhost:5000/api/dashboard";
+const API_URL = "http://localhost:5001/api/dashboard";
 
 const METRICS = [
     {

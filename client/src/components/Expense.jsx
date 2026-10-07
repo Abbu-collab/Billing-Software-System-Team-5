@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import "./Expense.css";
 
-const API_URL = "http://localhost:5000/api/expenses";
+const API_URL = "http://localhost:5001/api/expenses";
 
 const categories = [
     "Rent",

@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from "react";
 import "./Payment.css";
 
-const API_URL = "http://localhost:5000/api/payments";
+const API_URL = "http://localhost:5001/api/payments";
 
 const initialForm = {
     invoice: "",

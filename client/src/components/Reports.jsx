@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import "./Reports.css";
 
-const BASE_URL = "http://localhost:5000/api/reports";
+const BASE_URL = "http://localhost:5001/api/reports";
 
 const PERIODS = [
     { value: "today", label: "Today" },
