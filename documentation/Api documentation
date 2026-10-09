@@ -1,0 +1,816 @@
+# BILLING SOFTWARE SYSTEM
+
+## API DOCUMENTATION — TEAM 5
+
+**Project Name:** Billing Software System
+**Team Number:** Team 5
+**Module:** API Integration, Testing and Documentation
+**Role:** Member 4
+**Backend Technology:** Node.js, Express.js
+**Database:** MongoDB
+**Frontend Technology:** React.js, Vite
+**API Testing Tool:** Postman
+**Backend Port:** 5001
+
+---
+
+## 1. INTRODUCTION
+
+The Billing Software System is a web application designed to manage billing-related operations, including expenses, payments, dashboard information and business reports.
+
+The purpose of this document is to describe the available backend APIs, explain how to test them using Postman, and document the API integration and testing process.
+
+This documentation is prepared for Member 4, whose responsibilities include:
+
+* API testing using Postman.
+* Frontend and backend integration verification.
+* Testing the complete project workflow.
+* Identifying and reporting integration issues.
+* Checking responsive design.
+* Preparing API documentation.
+* Performing final testing before submission.
+
+**Note:** The endpoint details below are based on the project source code. Actual responses and test results must be verified by running the APIs.
+
+---
+
+## 2. PROJECT TECHNOLOGIES
+
+| Component                   | Technology |
+| --------------------------- | ---------- |
+| Frontend                    | React.js   |
+| Frontend Development Server | Vite       |
+| Backend                     | Node.js    |
+| Backend Framework           | Express.js |
+| Database                    | MongoDB    |
+| API Testing                 | Postman    |
+| API Communication           | HTTP/REST  |
+| Data Format                 | JSON       |
+
+---
+
+## 3. BACKEND CONFIGURATION
+
+### 3.1 Base URL
+
+The backend server uses port 5001 by default.
+
+**Base URL:**
+
+`http://localhost:5001`
+
+### 3.2 Starting the Backend Server
+
+1. Open the project folder in VS Code.
+
+2. Open the terminal.
+
+3. Navigate to the server directory:
+
+   `cd server`
+
+4. Install the dependencies:
+
+   `npm install`
+
+5. Start the backend:
+
+   `node server.js`
+
+6. Confirm that the server starts and MongoDB connects successfully.
+
+The `.env` file must contain a valid MongoDB connection string using the `MONGO_URI` environment variable.
+
+### 3.3 Health Check API
+
+**Method:** GET
+
+**Endpoint:**
+
+`http://localhost:5001/`
+
+**Purpose:** Checks whether the backend server is running.
+
+**Expected Status Code:** `200 OK`
+
+**Testing Steps:**
+
+1. Open Postman.
+2. Select GET.
+3. Enter the URL above.
+4. Click Send.
+5. Verify the response.
+
+---
+
+## 4. API ENDPOINT SUMMARY
+
+The following endpoint groups are available in the project source.
+
+| S.No. | Module       | HTTP Method | Endpoint                 | Purpose                    |
+| ----- | ------------ | ----------- | ------------------------ | -------------------------- |
+| 1     | Health Check | GET         | `/`                      | Check backend availability |
+| 2     | Expenses     | POST        | `/api/expenses`          | Create an expense          |
+| 3     | Expenses     | GET         | `/api/expenses`          | Retrieve all expenses      |
+| 4     | Expenses     | GET         | `/api/expenses/:id`      | Retrieve an expense by ID  |
+| 5     | Expenses     | PUT         | `/api/expenses/:id`      | Update an expense          |
+| 6     | Expenses     | DELETE      | `/api/expenses/:id`      | Delete an expense          |
+| 7     | Payments     | POST        | `/api/payments`          | Create a payment           |
+| 8     | Payments     | GET         | `/api/payments`          | Retrieve all payments      |
+| 9     | Payments     | GET         | `/api/payments/:id`      | Retrieve a payment by ID   |
+| 10    | Payments     | PUT         | `/api/payments/:id`      | Update payment details     |
+| 11    | Payments     | DELETE      | `/api/payments/:id`      | Delete a payment           |
+| 12    | Dashboard    | GET         | `/api/dashboard`         | Retrieve dashboard summary |
+| 13    | Reports      | GET         | `/api/reports/sales`     | Generate sales report      |
+| 14    | Reports      | GET         | `/api/reports/purchases` | Generate purchase report   |
+| 15    | Reports      | GET         | `/api/reports/expenses`  | Generate expense report    |
+| 16    | Reports      | GET         | `/api/reports/profit`    | Generate profit report     |
+
+**Important:** This table describes the endpoints identified in the source. It does not mean every endpoint has already passed testing.
+
+---
+
+## 5. EXPENSE MANAGEMENT APIs
+
+The Expense APIs allow users to create, retrieve, update and delete expense records.
+
+### 5.1 Create Expense
+
+**HTTP Method:** POST
+
+**Endpoint:**
+
+`http://localhost:5001/api/expenses`
+
+**Purpose:** Creates a new expense record.
+
+**Request Header:**
+
+`Content-Type: application/json`
+
+**Request Body:**
+
+```json
+{
+  "category": "Office Supplies",
+  "amount": 1250,
+  "description": "Purchase of office stationery",
+  "date": "2026-10-09"
+}
+```
+
+**Required Fields:**
+
+* `category`
+* `amount`
+* `date`
+
+The category must be one of the supported values:
+
+* Rent
+* Electricity
+* Transport
+* Salary
+* Maintenance
+* Office Supplies
+* Other
+
+**Expected Success Status:** `201 Created`
+
+**Testing Procedure:**
+
+1. Open Postman.
+2. Select POST.
+3. Enter the endpoint URL.
+4. Select Body → raw → JSON.
+5. Enter the request body.
+6. Click Send.
+7. Verify the response.
+8. Save the returned expense `_id` for subsequent tests.
+
+### 5.2 Retrieve All Expenses
+
+**HTTP Method:** GET
+
+**Endpoint:**
+
+`http://localhost:5001/api/expenses`
+
+**Purpose:** Retrieves the available expense records.
+
+**Expected Success Status:** `200 OK`
+
+**Validation:** Verify that the response contains the expenses saved in the database.
+
+### 5.3 Retrieve Expense by ID
+
+**HTTP Method:** GET
+
+**Endpoint:**
+
+`http://localhost:5001/api/expenses/EXPENSE_ID`
+
+Replace `EXPENSE_ID` with the actual ID returned by the create request.
+
+**Purpose:** Retrieves a specific expense record.
+
+**Expected Success Status:** `200 OK`
+
+**Possible Error Statuses:**
+
+* `400 Bad Request` — Invalid ID format.
+* `404 Not Found` — Expense does not exist.
+
+### 5.4 Update Expense
+
+**HTTP Method:** PUT
+
+**Endpoint:**
+
+`http://localhost:5001/api/expenses/EXPENSE_ID`
+
+**Request Body:**
+
+```json
+{
+  "category": "Transport",
+  "amount": 1500,
+  "description": "Updated transport expense",
+  "date": "2026-10-09"
+}
+```
+
+**Expected Success Status:** `200 OK`
+
+**Validation:** Send a GET request after updating and confirm that the changes are reflected in the response.
+
+### 5.5 Delete Expense
+
+**HTTP Method:** DELETE
+
+**Endpoint:**
+
+`http://localhost:5001/api/expenses/EXPENSE_ID`
+
+**Purpose:** Deletes the specified expense record.
+
+**Expected Success Status:** `200 OK`
+
+**Validation:** Send another GET request using the deleted ID. The API should return `404 Not Found` if the record was successfully deleted.
+
+**Note:** Perform delete testing only on records created for testing or records you are authorized to delete.
+
+---
+
+## 6. PAYMENT MANAGEMENT APIs
+
+The Payment APIs manage payment records associated with invoices.
+
+Payment creation depends on the availability of a valid invoice through the invoice service.
+
+### 6.1 Create Payment
+
+**HTTP Method:** POST
+
+**Endpoint:**
+
+`http://localhost:5001/api/payments`
+
+**Request Header:**
+
+`Content-Type: application/json`
+
+**Request Body:**
+
+```json
+{
+  "invoice": "YOUR_REAL_INVOICE_ID",
+  "amount": 100,
+  "paymentMethod": "UPI",
+  "paymentDate": "2026-10-09",
+  "transactionReference": "POSTMAN-TEST-001"
+}
+```
+
+Replace `YOUR_REAL_INVOICE_ID` with an actual invoice ID from the invoice service.
+
+**Required Fields:**
+
+* `invoice`
+* `amount`
+* `paymentMethod`
+* `paymentDate`
+
+The payment amount must be greater than zero and must not exceed the invoice's remaining balance.
+
+**Expected Success Status:** `201 Created`
+
+**Validation:**
+
+* Confirm that the payment is created.
+* Verify the payment amount.
+* Verify the invoice reference.
+* Verify the calculated payment status.
+* Verify the remaining invoice balance.
+
+The response may include a payment summary containing the invoice amount, previously paid amount, current payment amount, total paid amount, remaining amount and status.
+
+### 6.2 Retrieve All Payments
+
+**HTTP Method:** GET
+
+**Endpoint:**
+
+`http://localhost:5001/api/payments`
+
+**Purpose:** Retrieves payment records.
+
+**Expected Success Status:** `200 OK`
+
+**Validation:** Confirm that the newly created payment appears in the response.
+
+### 6.3 Retrieve Payment by ID
+
+**HTTP Method:** GET
+
+**Endpoint:**
+
+`http://localhost:5001/api/payments/PAYMENT_ID`
+
+Replace `PAYMENT_ID` with an actual payment ID.
+
+**Expected Success Status:** `200 OK`
+
+**Possible Error Statuses:**
+
+* `400 Bad Request` — Invalid payment ID.
+* `404 Not Found` — Payment does not exist.
+
+### 6.4 Update Payment
+
+**HTTP Method:** PUT
+
+**Endpoint:**
+
+`http://localhost:5001/api/payments/PAYMENT_ID`
+
+**Request Body:**
+
+```json
+{
+  "paymentMethod": "Card",
+  "paymentDate": "2026-10-09",
+  "transactionReference": "POSTMAN-TEST-UPDATED"
+}
+```
+
+The current controller updates the payment method, payment date and transaction reference.
+
+**Expected Success Status:** `200 OK`
+
+**Validation:** Retrieve the payment again and confirm that the permitted fields have been updated.
+
+### 6.5 Delete Payment
+
+**HTTP Method:** DELETE
+
+**Endpoint:**
+
+`http://localhost:5001/api/payments/PAYMENT_ID`
+
+**Expected Success Status:** `200 OK`
+
+**Validation:** Confirm that the payment no longer exists.
+
+Use a test payment and check the effect on invoice totals before performing this test.
+
+---
+
+## 7. DASHBOARD API
+
+### 7.1 Retrieve Dashboard Summary
+
+**HTTP Method:** GET
+
+**Endpoint:**
+
+`http://localhost:5001/api/dashboard`
+
+**Purpose:** Retrieves the summary information displayed on the dashboard.
+
+**Expected Success Status:** `200 OK`
+
+**Expected Response Structure:**
+
+```json
+{
+  "success": true,
+  "data": {
+    "todaySales": 0,
+    "totalSales": 0,
+    "totalPurchases": 0,
+    "totalCustomers": 0,
+    "totalProducts": 0,
+    "pendingPayments": 0,
+    "totalExpenses": 0,
+    "lowStockProducts": 0
+  }
+}
+```
+
+The numerical values above are examples of the response structure, not verified live results.
+
+**Testing Procedure:**
+
+1. Open Postman.
+2. Select GET.
+3. Enter the Dashboard endpoint.
+4. Click Send.
+5. Verify the returned fields.
+6. Compare the returned values with the relevant source APIs.
+7. Check server logs if values are missing or unexpectedly zero.
+
+The Dashboard depends on data from other backend services. A successful HTTP response does not necessarily mean that all integrations are working correctly.
+
+---
+
+## 8. REPORTS APIs
+
+The Reports module provides sales, purchase, expense and profit reports.
+
+The supported report periods are:
+
+* `today`
+* `week`
+* `month`
+* `custom`
+
+For a custom period, both `startDate` and `endDate` must be supplied in `YYYY-MM-DD` format.
+
+### 8.1 Sales Report
+
+**HTTP Method:** GET
+
+**Endpoint:**
+
+`http://localhost:5001/api/reports/sales?period=today`
+
+**Purpose:** Retrieves sales report information.
+
+**Expected Success Status:** `200 OK`
+
+**Expected Data Fields:**
+
+* `totalSales`
+* `numberOfSales`
+
+**Additional Test:**
+
+`http://localhost:5001/api/reports/sales?period=week`
+
+### 8.2 Purchase Report
+
+**HTTP Method:** GET
+
+**Endpoint:**
+
+`http://localhost:5001/api/reports/purchases?period=today`
+
+**Purpose:** Retrieves purchase report information.
+
+**Expected Success Status:** `200 OK`
+
+**Expected Data Fields:**
+
+* `totalPurchases`
+* `numberOfPurchases`
+
+### 8.3 Expense Report
+
+**HTTP Method:** GET
+
+**Endpoint:**
+
+`http://localhost:5001/api/reports/expenses?period=today`
+
+**Purpose:** Retrieves expense totals and category-wise expense information.
+
+**Expected Success Status:** `200 OK`
+
+**Expected Data Fields:**
+
+* `totalExpenses`
+* `expensesByCategory`
+
+### 8.4 Profit Report
+
+**HTTP Method:** GET
+
+**Endpoint:**
+
+`http://localhost:5001/api/reports/profit?period=today`
+
+**Purpose:** Retrieves the profit summary.
+
+**Expected Success Status:** `200 OK`
+
+**Expected Data Fields:**
+
+* `salesRevenue`
+* `purchaseCost`
+* `expenses`
+* `profit`
+
+The report calculates profit as sales revenue minus purchase cost minus expenses.
+
+### 8.5 Custom Date Report
+
+**Example Endpoint:**
+
+`http://localhost:5001/api/reports/sales?period=custom&startDate=2026-10-01&endDate=2026-10-09`
+
+**Expected Success Status:** `200 OK`, provided the request and dependent services are valid.
+
+**Negative Test Endpoint:**
+
+`http://localhost:5001/api/reports/sales?period=custom`
+
+**Expected Error Status:** `400 Bad Request`, because the custom period is missing its required date parameters.
+
+**Testing Validation:**
+
+1. Test the Today period.
+2. Test the Week period.
+3. Test the Month period.
+4. Test the Custom period with valid dates.
+5. Test the Custom period without dates.
+6. Record the actual response and status for each test.
+
+---
+
+## 9. POSTMAN API TESTING PROCESS
+
+Postman is used to send HTTP requests to the backend and inspect the responses.
+
+### 9.1 Import the Collection
+
+1. Open Postman.
+2. Click Import.
+3. Select the saved Team 5 Postman collection JSON file.
+4. Import the collection.
+5. Open the collection from the Collections sidebar.
+
+### 9.2 Configure the Request
+
+1. Select the required HTTP method.
+2. Enter the endpoint URL.
+3. For POST and PUT requests, select Body → raw → JSON.
+4. Enter the required JSON data.
+5. Click Send.
+6. Review the status code, response body and response time.
+
+### 9.3 Important HTTP Status Codes
+
+| Status Code               | Meaning                             |
+| ------------------------- | ----------------------------------- |
+| 200 OK                    | Request completed successfully      |
+| 201 Created               | Resource created successfully       |
+| 400 Bad Request           | Invalid request or validation error |
+| 404 Not Found             | Requested resource does not exist   |
+| 500 Internal Server Error | Unexpected server-side error        |
+
+The actual status code depends on the endpoint implementation and the specific request.
+
+### 9.4 Basic Postman Test Script
+
+In Postman's Scripts → Post-response section, use this script for requests expected to return either 200 or 201:
+
+```javascript
+pm.test("Expected success status", function () {
+    pm.expect(pm.response.code).to.be.oneOf([200, 201]);
+});
+
+pm.test("Response is JSON", function () {
+    pm.response.to.be.json;
+});
+```
+
+For negative tests, write a separate assertion for the expected error status.
+
+For example:
+
+```javascript
+pm.test("Missing custom dates return 400", function () {
+    pm.expect(pm.response.code).to.eql(400);
+});
+```
+
+Save the request and run it again to view the test results.
+
+---
+
+## 10. NEGATIVE API TESTING
+
+Negative testing verifies how the API responds to invalid input and missing data.
+
+| Test ID | Scenario                                 | Expected Result  |
+| ------- | ---------------------------------------- | ---------------- |
+| N01     | Create expense without category          | Validation error |
+| N02     | Create expense with invalid category     | Validation error |
+| N03     | Retrieve expense with invalid ID         | 400 Bad Request  |
+| N04     | Retrieve nonexistent expense             | 404 Not Found    |
+| N05     | Create payment without invoice           | 400 Bad Request  |
+| N06     | Create payment with zero amount          | 400 Bad Request  |
+| N07     | Create payment with negative amount      | 400 Bad Request  |
+| N08     | Create payment exceeding invoice balance | 400 Bad Request  |
+| N09     | Custom report without dates              | 400 Bad Request  |
+| N10     | Retrieve nonexistent payment             | 404 Not Found    |
+
+Run each test separately and record the actual response. If the observed behavior differs from the expected result, report it as an issue for investigation.
+
+---
+
+## 11. FRONTEND AND BACKEND INTEGRATION TESTING
+
+Member 4 is responsible for verifying that the frontend communicates correctly with the backend.
+
+### Integration Testing Procedure
+
+1. Start the backend server.
+2. Start the frontend application from its client directory.
+3. Open the local URL displayed by Vite.
+4. Navigate to the Expenses page.
+5. Create a test expense using the frontend.
+6. Verify that the expense appears in the UI.
+7. Retrieve expenses using Postman.
+8. Compare the frontend data with the API response.
+9. Repeat the process for Payments.
+10. Verify Dashboard and Reports data.
+11. Open browser developer tools using F12.
+12. Select the Network tab.
+13. Inspect the API requests and responses.
+14. Check for failed requests, incorrect URLs, CORS errors and unexpected server responses.
+
+### Integration Validation
+
+The following conditions should be verified:
+
+* The frontend calls the correct backend endpoint.
+* Data entered in the UI is sent correctly.
+* The backend returns the expected response.
+* The UI displays the returned data.
+* Updates appear after saving.
+* Deleted test records disappear from the UI.
+* Error messages are handled appropriately.
+* Dashboard and report values match the available source data.
+
+---
+
+## 12. RESPONSIVE DESIGN TESTING
+
+The application should be checked at different screen sizes.
+
+| Device Type | What to Verify                                                      |
+| ----------- | ------------------------------------------------------------------- |
+| Desktop     | Tables, forms, navigation and dashboard layout                      |
+| Tablet      | Content alignment and navigation                                    |
+| Mobile      | Readability, button visibility, form layout and horizontal overflow |
+
+### Testing Procedure
+
+1. Open the application in a browser.
+2. Press F12.
+3. Enable the device toolbar.
+4. Select a desktop, tablet or mobile viewport.
+5. Navigate through Expenses, Payments, Dashboard and Reports.
+6. Check whether content is readable and controls are usable.
+7. Record any layout problems and report them for correction.
+
+---
+
+## 13. API TEST RESULTS
+
+**Important:** Complete this table after executing the requests in Postman.
+
+| Test ID | Test Case                   | Expected Status | Actual Status | Result  |
+| ------- | --------------------------- | --------------- | ------------- | ------- |
+| T01     | Backend health check        | 200             | Not tested    | Pending |
+| T02     | Create expense              | 201             | Not tested    | Pending |
+| T03     | Retrieve all expenses       | 200             | Not tested    | Pending |
+| T04     | Retrieve expense by ID      | 200             | Not tested    | Pending |
+| T05     | Update expense              | 200             | Not tested    | Pending |
+| T06     | Delete expense              | 200             | Not tested    | Pending |
+| T07     | Create payment              | 201             | Not tested    | Pending |
+| T08     | Retrieve all payments       | 200             | Not tested    | Pending |
+| T09     | Update payment              | 200             | Not tested    | Pending |
+| T10     | Retrieve Dashboard          | 200             | Not tested    | Pending |
+| T11     | Sales report                | 200             | Not tested    | Pending |
+| T12     | Purchase report             | 200             | Not tested    | Pending |
+| T13     | Expense report              | 200             | Not tested    | Pending |
+| T14     | Profit report               | 200             | Not tested    | Pending |
+| T15     | Custom report without dates | 400             | Not tested    | Pending |
+| T16     | Invalid expense ID          | 400             | Not tested    | Pending |
+
+After executing a request, replace `Not tested` with the actual HTTP status code and change the result to `Pass` or `Fail`.
+
+Add any additional test cases that you execute.
+
+---
+
+## 14. TROUBLESHOOTING
+
+### Problem 1: Cannot Connect to the Server
+
+**Possible Cause:** Backend is not running or the port is incorrect.
+
+**Solution:**
+
+* Start the backend.
+* Verify the configured port.
+* Confirm the URL is correct.
+
+### Problem 2: MongoDB Connection Error
+
+**Possible Cause:** Invalid connection string, database access restrictions or network problems.
+
+**Solution:**
+
+* Check `MONGO_URI`.
+* Verify database credentials.
+* Verify MongoDB network access.
+* Review the backend terminal output.
+
+### Problem 3: Payment Creation Fails
+
+**Possible Cause:** Invoice service is unavailable or the invoice ID is invalid.
+
+**Solution:**
+
+* Verify the invoice service is running.
+* Obtain a valid invoice ID.
+* Check the remaining invoice balance.
+* Review the API response.
+
+### Problem 4: Dashboard Values Are Zero
+
+**Possible Cause:** Other backend services are unavailable or there is no matching data.
+
+**Solution:**
+
+* Verify the dependent APIs.
+* Compare the values with the source services.
+* Check backend logs.
+
+### Problem 5: API Returns 404
+
+**Possible Cause:** Incorrect route or record ID.
+
+**Solution:**
+
+* Verify the endpoint path.
+* Check the HTTP method.
+* Use a valid record ID.
+
+### Problem 6: API Returns 400
+
+**Possible Cause:** Invalid request body, missing fields or validation failure.
+
+**Solution:**
+
+* Check required fields.
+* Verify the JSON format.
+* Check amount and date values.
+* Read the response message.
+
+---
+
+## 15. FINAL SUBMISSION CHECKLIST
+
+* [ ] Backend starts successfully.
+* [ ] MongoDB connection is verified.
+* [ ] All available APIs are tested using Postman.
+* [ ] Expense CRUD operations are tested.
+* [ ] Payment APIs are tested with a valid invoice.
+* [ ] Dashboard API is tested.
+* [ ] All four report APIs are tested.
+* [ ] Positive and negative test cases are recorded.
+* [ ] Actual status codes and results are documented.
+* [ ] Postman collection is saved and exported.
+* [ ] Screenshots of important test results are captured.
+* [ ] Frontend and backend integration is verified.
+* [ ] Responsive design is checked.
+* [ ] Identified issues are documented.
+* [ ] API documentation is saved in the project.
+* [ ] Private database credentials are excluded from submission.
+
+---
+
+## 16. CONCLUSION
+
+As Member 4 of Team 5, my responsibility is to verify the integration between the frontend and backend, test the available APIs using Postman, validate successful and unsuccessful requests, identify integration issues, check responsive design and prepare API documentation.
+
+The testing results will be finalized after executing the requests and verifying their actual responses in the project environment.
+
+**Prepared by:** Team 5 — Member 4
+**Project:** Billing Software System
+**Document:** API Documentation, Integration and Testing
